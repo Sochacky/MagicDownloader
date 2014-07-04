@@ -7,15 +7,15 @@ import java.util.*;
 import javax.swing.*;
 
 public class MagicDownloader extends JFrame implements Observer{
+	private final int FTP = 0;
+	private final int HTTP = 1;
 	private JTextField addTextField;
 	private TableModel tableModel;
 	private JTable table;
 	private JButton pauseButton, resumeButton;
 	private JButton cancelButton, clearButton;
-	private Download selectedDownload;
+	private Download selectedD;
 	private boolean clearing;
-	private final int FTP = 0;
-	private final int HTTP = 1;
 	private int protocolType = -1;
   
 	public MagicDownloader(){
@@ -71,16 +71,16 @@ public class MagicDownloader extends JFrame implements Observer{
 
 	    JPanel buttonsPanel = new JPanel();
 	    pauseButton = new JButton("Pauza");
-	    pauseButton.addActionListener((e)->actionPause()); //J8
+	    pauseButton.addActionListener((e)->pause()); //J8
 	    pauseButton.setEnabled(false);
 	    resumeButton = new JButton("Wznów");
-	    resumeButton.addActionListener((e)->actionResume()); //J8
+	    resumeButton.addActionListener((e)->resume()); //J8
 	    resumeButton.setEnabled(false);
 	    cancelButton = new JButton("Anuluj");
-	    cancelButton.addActionListener((e)->actionCancel()); //J8
+	    cancelButton.addActionListener((e)->cancel()); //J8
 	    cancelButton.setEnabled(false);
 	    clearButton = new JButton("Usuń");
-	    clearButton.addActionListener((e)->actionClear()); //J8
+	    clearButton.addActionListener((e)->clear()); //J8
 	    clearButton.setEnabled(false);
 	    
 	    
@@ -138,41 +138,41 @@ public class MagicDownloader extends JFrame implements Observer{
 	}
 
  	private void tableSelectionChanged() {
- 		if (selectedDownload != null)
- 			selectedDownload.deleteObserver(MagicDownloader.this);
+ 		if (selectedD != null)
+ 			selectedD.deleteObserver(MagicDownloader.this);
  		if (!clearing) {
- 			selectedDownload = tableModel.getDownload(table.getSelectedRow());
- 			selectedDownload.addObserver(MagicDownloader.this);
+ 			selectedD = tableModel.getDownload(table.getSelectedRow());
+ 			selectedD.addObserver(MagicDownloader.this);
  			updateButtons();
  		}
  	}
 
- 	private void actionPause() {
- 		selectedDownload.pause();
+ 	private void pause() {
+ 		selectedD.pause();
  		updateButtons();
  	}
 
- 	private void actionResume() {
- 		selectedDownload.resume();
+ 	private void resume() {
+ 		selectedD.resume();
  		updateButtons();
  	}
 
- 	private void actionCancel() {
- 		selectedDownload.cancel();
+ 	private void cancel() {
+ 		selectedD.cancel();
  		updateButtons();
  	}
 
- 	private void actionClear() {
+ 	private void clear() {
  		clearing = true;
  		tableModel.clearDownload(table.getSelectedRow());
  		clearing = false;
- 		selectedDownload = null;
+ 		selectedD = null;
  		updateButtons();
  	}
 
  	private void updateButtons() {
- 		 if (selectedDownload != null) {
- 			 int status = selectedDownload.status;
+ 		 if (selectedD != null) {
+ 			 int status = selectedD.status;
  		     switch (status) {
  		     case Download.DOWNLOADING:
  		    	 pauseButton.setEnabled(true);
@@ -207,7 +207,7 @@ public class MagicDownloader extends JFrame implements Observer{
  	}
 
  	public void update(Observable o, Object obj) {
- 		if (selectedDownload != null && selectedDownload.equals(o))
+ 		if (selectedD != null && selectedD.equals(o))
  			updateButtons();
  	}
 
